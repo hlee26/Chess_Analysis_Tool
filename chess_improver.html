@@ -152,6 +152,35 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', syste
 .br { background: rgba(217,83,79,0.18); color: var(--red); }
 .by { background: rgba(240,208,96,0.18); color: var(--accent); }
 
+/* ── Family rows (expandable) ── */
+.fam-row { cursor: pointer; }
+.fam-row:hover td { background: rgba(255,255,255,0.03); }
+.fam-row td.fam-name { font-weight: 600; color: var(--accent2); }
+.fam-arrow { width: 24px; text-align: center; color: var(--muted); transition: transform 0.15s; display: inline-block; }
+.fam-arrow.open { transform: rotate(90deg); color: var(--accent); }
+.fam-detail-cell { padding: 0 !important; }
+.fam-expand {
+  padding: 14px 18px 18px;
+  background: rgba(0,0,0,0.22);
+  border-left: 3px solid var(--accent);
+}
+.fam-tip {
+  font-size: 12.5px; color: var(--text); line-height: 1.65;
+  padding: 10px 14px; background: rgba(78,204,163,0.06);
+  border-radius: 6px; border: 1px solid rgba(78,204,163,0.18);
+  margin-bottom: 12px;
+}
+.fam-tip strong { color: var(--accent2); margin-right: 6px; }
+.fam-tip.empty { background: rgba(255,255,255,0.02); border-color: var(--border); }
+.fam-tip.empty strong { color: var(--muted); }
+.fam-lines-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.fam-lines-table th {
+  text-align: left; padding: 6px 10px; color: var(--muted);
+  border-bottom: 1px solid var(--border); font-weight: 500;
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.fam-lines-table td { padding: 7px 10px; border-bottom: 1px solid rgba(42,42,74,0.4); }
+
 .color-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
 .color-box {
   background: rgba(255,255,255,0.03); border: 1px solid var(--border);
@@ -189,6 +218,31 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', syste
 .pth { background: rgba(217,83,79,0.15); color: var(--red); }
 .ptm { background: rgba(240,208,96,0.15); color: var(--accent); }
 .ptl { background: rgba(78,204,163,0.15); color: var(--accent2); }
+
+/* ── Blunder Zone ── */
+.blunder-zone { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+.bz-title { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.bz-sub { font-weight: 400; text-transform: none; color: var(--muted); font-size: 10.5px; letter-spacing: 0; }
+.bz-chart-wrap { overflow-x: auto; }
+.bz-legend { display: flex; gap: 14px; font-size: 11px; color: var(--muted); margin-top: 7px; flex-wrap: wrap; }
+.bz-legend span { display: flex; align-items: center; gap: 4px; }
+.bz-stats { font-size: 11.5px; color: var(--text); margin-top: 7px; display: flex; gap: 18px; flex-wrap: wrap; }
+.bz-stats b { color: var(--accent2); }
+.bz-nodata { font-size: 12px; color: var(--muted); padding: 8px 0; font-style: italic; }
+.bz-pill { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-left: 4px; }
+.bz-blunder { background: rgba(217,83,79,0.18); color: #d9534f; }
+.bz-mistake { background: rgba(240,160,80,0.18); color: #f0a050; }
+.bz-inaccuracy { background: rgba(240,208,96,0.18); color: var(--accent); }
+.bz-analyze-btn {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 10px;
+  background: rgba(78,204,163,0.10); border: 1px solid rgba(78,204,163,0.35);
+  color: var(--accent2); padding: 9px 18px; border-radius: 8px;
+  cursor: pointer; font-size: 12.5px; font-weight: 600; transition: all 0.15s;
+}
+.bz-analyze-btn:hover  { background: rgba(78,204,163,0.22); border-color: var(--accent2); }
+.bz-analyze-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.bz-loading { display: flex; align-items: center; gap: 12px; padding: 16px 0; color: var(--muted); font-size: 13px; }
+.bz-source-tag { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 6px; background: rgba(78,204,163,0.15); color: var(--accent2); }
 
 /* hidden states */
 #app-header { display: none; }
@@ -317,8 +371,13 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', syste
   </div>
 
   <div class="card" style="margin-bottom:16px">
-    <h3>♟ Opening Performance <span style="font-size:11px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(min. 3 games)</span></h3>
-    <div id="opening-container"></div>
+    <h3>⬜ Openings As White <span style="font-size:11px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(what you play — click a family to expand)</span></h3>
+    <div id="white-openings-container"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <h3>⬛ Openings As Black <span style="font-size:11px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(what opponents play against you — click to expand)</span></h3>
+    <div id="black-openings-container"></div>
   </div>
 
   <div class="grid-2" style="margin-bottom:16px">
@@ -365,7 +424,14 @@ body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', syste
 // STATE
 // ─────────────────────────────────────────────
 let USERNAME = '';
-let charts = {};
+let charts   = {};
+
+// Engine analysis state
+let SF_WORKER      = null;   // Stockfish Web Worker (lazy-loaded)
+let CHESS_JS_READY = false;  // chess.js loaded flag
+const ENGINE_CACHE = {};     // `${color}:${familyName}` → {buckets, criticalMoves, evalGames}
+const FAM_REGISTRY = {};     // rowId → {color, familyName}
+let GAME_DATA_STORE = { whiteGames: [], blackGames: [] };
 
 // ─────────────────────────────────────────────
 // SCREEN MANAGEMENT
@@ -457,6 +523,332 @@ function shortOpening(name) {
 }
 
 // ─────────────────────────────────────────────
+// ECO → OPENING FAMILY MAPPING
+// Lexicographic comparison works since ECO codes are letter+two digits
+// ─────────────────────────────────────────────
+const ECO_RANGES = [
+  ['A00','A00','Irregular Openings'],
+  ['A01','A01','Larsen / Nimzo-Larsen'],
+  ['A02','A03','Bird Opening'],
+  ['A04','A09','Réti Opening'],
+  ['A10','A39','English Opening'],
+  ['A40','A41','Queen\'s Pawn (Other)'],
+  ['A42','A42','Modern Defense'],
+  ['A43','A44','Old Benoni'],
+  ['A45','A50','Indian Game (Other)'],
+  ['A51','A52','Budapest Gambit'],
+  ['A53','A55','Old Indian Defense'],
+  ['A56','A56','Benoni Defense'],
+  ['A57','A59','Benko Gambit'],
+  ['A60','A79','Modern Benoni'],
+  ['A80','A99','Dutch Defense'],
+  ['B00','B00','Uncommon King\'s Pawn'],
+  ['B01','B01','Scandinavian Defense'],
+  ['B02','B05','Alekhine\'s Defense'],
+  ['B06','B06','Modern Defense'],
+  ['B07','B09','Pirc Defense'],
+  ['B10','B19','Caro-Kann Defense'],
+  ['B20','B99','Sicilian Defense'],
+  ['C00','C19','French Defense'],
+  ['C20','C20','Open Game (Other)'],
+  ['C21','C22','Center Game'],
+  ['C23','C24','Bishop\'s Opening'],
+  ['C25','C29','Vienna Game'],
+  ['C30','C39','King\'s Gambit'],
+  ['C40','C40','Latvian / Elephant Gambit'],
+  ['C41','C41','Philidor Defense'],
+  ['C42','C43','Petrov Defense'],
+  ['C44','C44','King\'s Pawn Game'],
+  ['C45','C45','Scotch Game'],
+  ['C46','C49','Three / Four Knights'],
+  ['C50','C54','Italian Game'],
+  ['C55','C59','Two Knights Defense'],
+  ['C60','C99','Ruy Lopez (Spanish)'],
+  ['D00','D05','Queen\'s Pawn Game (London/Colle)'],
+  ['D06','D06','Queen\'s Gambit'],
+  ['D07','D09','Chigorin / Albin Counter'],
+  ['D10','D19','Slav Defense'],
+  ['D20','D29','Queen\'s Gambit Accepted'],
+  ['D30','D69','Queen\'s Gambit Declined'],
+  ['D70','D99','Grünfeld Defense'],
+  ['E00','E09','Catalan Opening'],
+  ['E10','E19','Queen\'s Indian Defense'],
+  ['E20','E59','Nimzo-Indian Defense'],
+  ['E60','E99','King\'s Indian Defense'],
+];
+
+function getEcoFamily(eco) {
+  if (!eco || eco === '?') return 'Unknown';
+  for (const [min, max, family] of ECO_RANGES) {
+    if (eco >= min && eco <= max) return family;
+  }
+  return 'Unknown';
+}
+
+// ─────────────────────────────────────────────
+// PER-FAMILY STUDY GUIDANCE
+// asWhite = advice when YOU are White facing this opening
+// asBlack = advice when YOU are Black facing this opening
+// ─────────────────────────────────────────────
+const FAMILY_INFO = {
+  'Ruy Lopez (Spanish)': {
+    asWhite: 'Drill the Closed Spanish move order, plus an anti-Berlin and anti-Marshall. Highest-yield opening to study deeply.',
+    asBlack: 'Pick ONE response (Berlin, Open Spanish, or Marshall) and learn it deeply — knowing one line cold beats three shallowly.',
+  },
+  'Italian Game': {
+    asWhite: 'Pick Giuoco Piano (slow, c3+d3) for positional play OR push for d4 quickly. Watch for Two Knights tactics (Fried Liver).',
+    asBlack: 'Symmetrical Italian is fine. If facing the Two Knights, know your defenses to Ng5 — many traps await.',
+  },
+  'Sicilian Defense': {
+    asWhite: 'You face Black\'s sharpest defense. Either commit to Open Sicilian (huge theory) or pick an Anti-Sicilian (c3, Nc3, Bb5+, Closed). Anti-Sicilians scale better at amateur level.',
+    asBlack: 'Pick ONE Sicilian variation (Najdorf, Dragon, Sveshnikov, Taimanov, Kan, Accelerated Dragon) and learn its typical pawn structures + middlegame plans deeply.',
+  },
+  'French Defense': {
+    asWhite: 'Choose Advance (3.e5), Tarrasch (3.Nd2), Classical (3.Nc3) or Exchange. Tarrasch is the most amateur-friendly.',
+    asBlack: 'Solid but cramped. Master the typical pawn breaks ...c5 and ...f6 — without them you\'ll suffocate.',
+  },
+  'Caro-Kann Defense': {
+    asWhite: 'Solid for Black. Try Advance (3.e5) or Two Knights (3.Nc3) for active games. Avoid the Exchange — too drawish.',
+    asBlack: 'Very solid. Pick Classical (4...Bf5) or Karpov (4...Nd7) and learn the typical endgames.',
+  },
+  'Scandinavian Defense': {
+    asWhite: 'Easy to handle — develop classically and gain time on Black\'s queen.',
+    asBlack: 'Simple to learn, hard to crush. Pick 2...Qxd5 (Mieses) or 2...Nf6 (Modern). Both score reasonably.',
+  },
+  'Alekhine\'s Defense': {
+    asWhite: 'Build the center: Four Pawns Attack (sharp) or Modern Variation (positional). Don\'t be passive.',
+    asBlack: 'Hypermodern provocation. Risky if White plays accurately — solid but not winning.',
+  },
+  'Pirc Defense': {
+    asWhite: 'Try the Austrian Attack (f4) or Classical (Nf3, Be2). Don\'t let Black equalize without a fight.',
+    asBlack: 'Hypermodern. You concede the center to attack it later — practical and surprise-friendly.',
+  },
+  'Modern Defense': {
+    asWhite: 'Build a big center, then expand carefully. Don\'t overextend — Black is waiting to strike.',
+    asBlack: 'Flexible system that often transposes to Pirc. Beware giving up too much space.',
+  },
+  'Vienna Game': {
+    asWhite: 'Solid alternative to Italian/Spanish. Try the Vienna Gambit (3.f4) for sharp play.',
+    asBlack: '...Nf6 is most natural. Treat like a King\'s Pawn opening and develop normally.',
+  },
+  'King\'s Gambit': {
+    asWhite: 'Romantic, sharp. Know your tactics — opportunities for both sides, but theory has shifted against White.',
+    asBlack: 'Several solid antidotes (Falkbeer, Modern, Classical accept). Don\'t play passively or you\'ll get crushed.',
+  },
+  'Scotch Game': {
+    asWhite: 'Direct central play. Know the Mieses Variation traps and main lines.',
+    asBlack: 'Either ...Nf6 (Schmidt) or ...Bc5 (Classical). Both hold up well.',
+  },
+  'Petrov Defense': {
+    asWhite: 'Drawish reputation. Try 5.Nc3 or 5.d4 to keep tension; avoid the Exchange.',
+    asBlack: 'Very solid. Symmetrical lines often trade to drawn endgames.',
+  },
+  'Two Knights Defense': {
+    asWhite: 'Sharp lines after 4.Ng5. Know the Traxler / Fritz / Ulvestad too — Black has resources.',
+    asBlack: 'Active piece play. Be ready for 4.Ng5 with confident theory or you\'ll lose quickly.',
+  },
+  'Three / Four Knights': {
+    asWhite: 'Quiet positional play. Know typical pawn structures.',
+    asBlack: 'Symmetrical and solid. Watch for the Belgrade Gambit if White wants to surprise you.',
+  },
+  'Italian Game (general)': {
+    asWhite: 'Pick a setup (Giuoco Pianissimo, Evans Gambit, or Knight\'s attack with Ng5) and stick with it.',
+    asBlack: 'Symmetric defense is fine. The Two Knights complications are the main thing to prepare.',
+  },
+  'Philidor Defense': {
+    asWhite: 'Classical setup with a strong center. Just develop naturally — you have an edge.',
+    asBlack: 'Solid but passive. Try the Modern (Hanham) line for more counterplay.',
+  },
+  'Queen\'s Gambit Declined': {
+    asWhite: 'Go for the Exchange Variation (clear minority attack plan) — easiest classical white setup to learn.',
+    asBlack: 'Classical, solid choice. Study Tartakower, Lasker, and Orthodox setups in that order.',
+  },
+  'Queen\'s Gambit': {
+    asWhite: 'Standard fight for d5. Many transpositions to QGD/QGA/Slav.',
+    asBlack: 'Choose your defense: QGD (solid), QGA (active piece play), or Slav (most flexible).',
+  },
+  'Queen\'s Gambit Accepted': {
+    asWhite: 'Recapture with 3.e4 for active center, or 3.Nf3 for solid central control. Don\'t let Black hold c4.',
+    asBlack: 'Aim for ...c5 break to challenge White\'s center. Don\'t try to hold the c4 pawn.',
+  },
+  'Slav Defense': {
+    asWhite: 'Try the Exchange Variation for clarity, or the Slow Slav (3.Nf3) for nuanced play.',
+    asBlack: 'Very solid. Pick Semi-Slav (more dynamic) or Pure Slav (more positional).',
+  },
+  'Catalan Opening': {
+    asWhite: 'Long-term squeeze. Master Open Catalan (taking on c4) and Closed Catalan plans.',
+    asBlack: 'Decide whether to take c4 (Open) or hold solid (Closed). Open Catalan equalizes more cleanly.',
+  },
+  'King\'s Indian Defense': {
+    asWhite: 'Prepare for kingside attacks. Try Sämisch (5.f3) or Classical Mar del Plata. Don\'t try the Exchange — drawish.',
+    asBlack: 'Sharp, theoretical. Study the typical pawn races: White attacks queenside, you attack kingside.',
+  },
+  'Nimzo-Indian Defense': {
+    asWhite: 'Pick ONE: Rubinstein (4.e3), Classical (4.Qc2), Sämisch (4.a3), or 4.f3. Each is a different beast.',
+    asBlack: 'Excellent at all levels. Master 4...0-0 lines and the Hübner; learn the typical pawn structures.',
+  },
+  'Queen\'s Indian Defense': {
+    asWhite: 'Try the Petrosian (4.a3) or Classical (4.g3). Long structural plans, no quick attack.',
+    asBlack: 'Solid hypermodern defense. Watch for the c4-c5 break by White.',
+  },
+  'Grünfeld Defense': {
+    asWhite: 'Theoretical minefield. Pick Exchange (sharpest), Russian System, or Bg5 lines and commit.',
+    asBlack: 'Very dynamic. Drill the typical ...c5 break and the Exchange Variation lines deeply.',
+  },
+  'English Opening': {
+    asWhite: 'Flexible flank opening. Often transposes — a strong "system" choice if you don\'t want to memorize sharp e4 theory.',
+    asBlack: 'Symmetric with ...c5 is solid. Reverse-Sicilian setups (...e5) also work well.',
+  },
+  'Réti Opening': {
+    asWhite: 'Flexible system. Can transpose into English, Catalan, or KIA depending on Black\'s setup.',
+    asBlack: 'Just play normally — ...d5, ...Nf6, develop. Don\'t panic about the unusual move order.',
+  },
+  'Bird Opening': {
+    asWhite: 'Unusual flank opening. Watch the e4 square — Black\'s Froms Gambit (1...e5) is the main test.',
+    asBlack: 'Often a sign of an off-beat opponent. Try ...d5, ...Nf6 classically, or the Froms (1...e5) for a fight.',
+  },
+  'Larsen / Nimzo-Larsen': {
+    asWhite: 'Off-beat. Aim for kingside fianchetto + d4. Limited at higher levels.',
+    asBlack: 'Develop classically with ...d5, ...Nf6, ...e6. Nothing scary here.',
+  },
+  'Queen\'s Pawn Game (London/Colle)': {
+    asWhite: 'The London System (Bf4 setup) is wildly popular. Easy to learn — but don\'t expect a big edge against prepared Black.',
+    asBlack: 'Against the London: ...c5 + ...Nc6 + ...Qb6 puts pressure on b2. Don\'t play passively.',
+  },
+  'Dutch Defense': {
+    asWhite: 'Anti-Dutch tries: 2.Bg5, 2.Nc3, or 2.Qd3. Or just 2.g3 + classical setup to neutralize Black\'s plan.',
+    asBlack: 'Pick Leningrad (g6 setup), Stonewall (e6+d5), or Classical (e6+d6). Each has very different character — don\'t mix them.',
+  },
+  'Benoni Defense': {
+    asWhite: 'Master the Modern Benoni structure. White has a strong queenside pawn majority.',
+    asBlack: 'Sharp and unbalanced. Aggressive choice if you like complications.',
+  },
+  'Modern Benoni': {
+    asWhite: 'Aim for the Taimanov (8.Bb5+) or Mikenas Attack for active play.',
+    asBlack: 'Highly tactical. Master the typical pawn breaks ...b5 and ...f5.',
+  },
+  'Benko Gambit': {
+    asWhite: 'Either accept (need theory) or decline with 4.Nf3 / 4.Qc2. Declining is amateur-friendly.',
+    asBlack: 'Long-term positional pressure on the queenside. Easy to learn, hard for White to refute.',
+  },
+  'Budapest Gambit': {
+    asWhite: 'Decline calmly — 4.Nf3 keeps it under control.',
+    asBlack: 'Surprise weapon. Risky against prepared opponents.',
+  },
+  'Old Indian Defense': {
+    asWhite: 'Quiet positional play with d4/c4/Nc3.',
+    asBlack: 'Less theoretical than King\'s Indian. Solid but passive.',
+  },
+  'Indian Game (Other)': {
+    asWhite: 'Often London/Trompowsky/Torre territory. Learn the basic ideas of whichever you play.',
+    asBlack: 'Develop normally — ...Nf6, ...g6 or ...e6, ...d5/...d6.',
+  },
+  'Chigorin / Albin Counter': {
+    asWhite: 'Easy to handle if you know the basic ideas. The Albin is dubious.',
+    asBlack: 'Off-beat, risky. Chigorin can be playable; Albin is mostly for surprise.',
+  },
+  'Center Game': {
+    asWhite: 'Active queen play. Watch for tactics in the early middlegame — your queen is exposed.',
+    asBlack: 'Develop quickly with ...Nc6, ...Nf6, ...d6. White\'s queen is a target.',
+  },
+  'Bishop\'s Opening': {
+    asWhite: 'Often transposes to Vienna or Italian. Flexible move order.',
+    asBlack: 'Treat as a King\'s Pawn game. ...Nf6 + ...c6 (or ...Nc6) is fine.',
+  },
+  'King\'s Pawn Game': {
+    asWhite: 'Develop classically. The opening tells you little — outplay them later.',
+    asBlack: 'Standard development. Nothing special to memorize.',
+  },
+  'Open Game (Other)': {
+    asWhite: 'Various 1.e4 e5 sidelines. Develop classically and look for tactics.',
+    asBlack: 'Standard development. Most White sidelines don\'t pose serious problems.',
+  },
+  'Latvian / Elephant Gambit': {
+    asWhite: 'Refute it cleanly with 3.Nxe5 (Latvian) or 3.exd5 (Elephant). Don\'t get fancy.',
+    asBlack: 'Dubious surprise weapons. Not recommended for serious play.',
+  },
+  'Old Benoni': {
+    asWhite: 'Take the center with e4. You\'ll have a clearly freer position.',
+    asBlack: 'Less popular than Modern Benoni. Limited counterplay.',
+  },
+  'Queen\'s Pawn (Other)': {
+    asWhite: 'Various d4 setups. Develop normally with c4 or Nf3.',
+    asBlack: 'Black has good options against unusual White tries. ...d5 + ...Nf6 is always sound.',
+  },
+  'Irregular Openings': {
+    asWhite: 'Just develop normally. Most irregular tries are sub-optimal.',
+    asBlack: 'Don\'t panic — take central squares and develop pieces. You usually get a great position.',
+  },
+  'Uncommon King\'s Pawn': {
+    asWhite: 'Standard development beats most off-beat tries.',
+    asBlack: 'Develop classically — ...Nf6, ...e5 or ...d5.',
+  },
+  'Unknown': {
+    asWhite: 'Not enough data to identify the opening family.',
+    asBlack: 'Not enough data to identify the opening family.',
+  },
+};
+
+function familyInfo(name, color) {
+  const info = FAMILY_INFO[name] || FAMILY_INFO['Unknown'];
+  return color === 'white' ? info.asWhite : info.asBlack;
+}
+
+// ─────────────────────────────────────────────
+// EVAL SWING ANALYSIS
+// chess.com includes [%eval X] in PGN comments when Game Review is run
+// ─────────────────────────────────────────────
+const MATE_CAP    = 10;   // treat mates as ±10 pawns so swings stay bounded
+const BLUNDER_THR = 2.0;
+const MISTAKE_THR = 1.0;
+const INACCURACY_THR = 0.5;
+const MOVE_BUCKETS = ['1–5','6–10','11–15','16–20','21–25','26–30','31–40','41+'];
+
+function parsePGNEvals(pgn) {
+  // Returns an array of eval values, one per half-move (ply), in game order.
+  // Positive = good for White (standard chess convention).
+  const vals = [];
+  const re = /\{[^}]*\[%eval\s+(#?-?\d+\.?\d*)\][^}]*\}/g;
+  let m;
+  while ((m = re.exec(pgn)) !== null) {
+    const s = m[1];
+    if (s.startsWith('#')) {
+      vals.push(parseInt(s.slice(1)) > 0 ? MATE_CAP : -MATE_CAP);
+    } else {
+      vals.push(Math.max(-MATE_CAP, Math.min(MATE_CAP, parseFloat(s))));
+    }
+  }
+  return vals;
+}
+
+function computePlayerSwings(evalArr, isWhite) {
+  // Returns [{moveNumber, swing}] for each of the player's own plies.
+  // swing > 0  →  player LOST advantage on that move (bad move)
+  // swing ≤ 0  →  player held or gained advantage (good move)
+  const out = [];
+  for (let i = 0; i < evalArr.length; i++) {
+    const whitePly = (i % 2 === 0);  // 0-indexed: even = White's ply
+    if (isWhite !== whitePly) continue;
+    const prev = i === 0 ? 0.2 : evalArr[i - 1]; // ~0.2 is the typical starting eval
+    const curr = evalArr[i];
+    const swing = isWhite ? (prev - curr) : (curr - prev);
+    out.push({ moveNumber: Math.floor(i / 2) + 1, swing });
+  }
+  return out;
+}
+
+function getMoveBucket(mn) {
+  if (mn <= 5)  return '1–5';
+  if (mn <= 10) return '6–10';
+  if (mn <= 15) return '11–15';
+  if (mn <= 20) return '16–20';
+  if (mn <= 25) return '21–25';
+  if (mn <= 30) return '26–30';
+  if (mn <= 40) return '31–40';
+  return '41+';
+}
+
+// ─────────────────────────────────────────────
 // FETCHING
 // ─────────────────────────────────────────────
 async function fetchGames(username) {
@@ -508,6 +900,12 @@ function processGames(rawGames, username) {
     const lost = ['resigned','checkmated','timeout','abandoned','lose'].includes(result);
     const drew = !won && !lost;
 
+    // Eval swing analysis (only available when chess.com Game Review has been run)
+    const evalArr = parsePGNEvals(g.pgn || '');
+    const swings  = evalArr.length > 0 ? computePlayerSwings(evalArr, isWhite) : [];
+    // Find the single move where the player lost the most advantage (the "critical blunder")
+    const critSwing = swings.reduce((best, s) => s.swing > best.swing ? s : best, { moveNumber: null, swing: -Infinity });
+
     return {
       date: new Date(g.end_time * 1000),
       isWhite, myRating: me.rating, oppRating: opp.rating,
@@ -516,6 +914,11 @@ function processGames(rawGames, username) {
       opening: shortOpening(headers.Opening || null),
       eco: headers.ECO || '?',
       fullMoves,
+      pgn: g.pgn || '',   // kept for client-side engine analysis
+      swings,
+      hasEval: swings.length > 0,
+      criticalMove: critSwing.moveNumber,
+      maxSwing: critSwing.swing > -Infinity ? critSwing.swing : null,
     };
   }).sort((a, b) => a.date - b.date);
 }
@@ -550,6 +953,8 @@ function computeStats(games) {
     .filter(o => o.total >= 3).sort((a,b) => b.total-a.total).slice(0,14);
 
   const wG = games.filter(g=>g.isWhite), bG = games.filter(g=>!g.isWhite);
+  const whiteFamilies = buildFamilyStats(wG);
+  const blackFamilies = buildFamilyStats(bG);
   const cs = {
     white: { games:wG.length, wins:wG.filter(g=>g.won).length, draws:wG.filter(g=>g.drew).length, losses:wG.filter(g=>g.lost).length, winRate: wG.length?wG.filter(g=>g.won).length/wG.length*100:0 },
     black: { games:bG.length, wins:bG.filter(g=>g.won).length, draws:bG.filter(g=>g.drew).length, losses:bG.filter(g=>g.lost).length, winRate: bG.length?bG.filter(g=>g.won).length/bG.length*100:0 },
@@ -571,8 +976,58 @@ function computeStats(games) {
     avgAcc, avgWinAcc, avgLossAcc, withAccCount: withAcc.length,
     ratingHistory, firstRating, lastRating, ratingDelta,
     openings, cs, phase, terms,
+    whiteFamilies, blackFamilies,
     last30acc: games.filter(g=>g.accuracy!=null).slice(-30),
   };
+}
+
+// Group games by ECO family, then by specific opening line within each family.
+function buildFamilyStats(games) {
+  const fam = {};
+  games.forEach(g => {
+    const family = getEcoFamily(g.eco);
+    if (!fam[family]) fam[family] = { name: family, total: 0, wins: 0, draws: 0, losses: 0, lines: {} };
+    const f = fam[family];
+    f.total++;
+    if (g.won) f.wins++; else if (g.lost) f.losses++; else f.draws++;
+
+    const lineName = g.opening || 'Unknown Line';
+    if (!f.lines[lineName]) f.lines[lineName] = { name: lineName, total: 0, wins: 0, draws: 0, losses: 0 };
+    const l = f.lines[lineName];
+    l.total++;
+    if (g.won) l.wins++; else if (g.lost) l.losses++; else l.draws++;
+
+    // ── Eval swing aggregation ──
+    if (g.hasEval && g.swings.length > 0) {
+      if (!f.evalGames)     f.evalGames     = 0;
+      if (!f.criticalMoves) f.criticalMoves = [];
+      if (!f.buckets)       f.buckets       = {};
+      f.evalGames++;
+      if (g.criticalMove != null) f.criticalMoves.push(g.criticalMove);
+      g.swings.forEach(({ moveNumber, swing }) => {
+        const bkt = getMoveBucket(moveNumber);
+        if (!f.buckets[bkt]) f.buckets[bkt] = { sumPos: 0, n: 0, blunders: 0, mistakes: 0, inaccuracies: 0 };
+        const b = f.buckets[bkt];
+        b.sumPos += Math.max(0, swing); // only accumulate losses (positive swings)
+        b.n++;
+        if (swing >= BLUNDER_THR)     b.blunders++;
+        else if (swing >= MISTAKE_THR) b.mistakes++;
+        else if (swing >= INACCURACY_THR) b.inaccuracies++;
+      });
+    }
+  });
+  return Object.values(fam)
+    .map(f => ({
+      ...f,
+      winRate: f.total ? f.wins / f.total : 0,
+      lines: Object.values(f.lines)
+        .map(l => ({ ...l, winRate: l.total ? l.wins / l.total : 0 }))
+        .sort((a, b) => b.total - a.total),
+      evalGames:     f.evalGames     || 0,
+      criticalMoves: f.criticalMoves || [],
+      buckets:       f.buckets       || {},
+    }))
+    .sort((a, b) => b.total - a.total);
 }
 
 // ─────────────────────────────────────────────
@@ -619,21 +1074,411 @@ function renderResults(wins, draws, losses) {
     `<div style="color:var(--red)"><b>${losses}</b> <span style="color:var(--muted)">Losses (${(losses/total*100).toFixed(1)}%)</span></div>`;
 }
 
-function renderOpenings(openings) {
-  const el = document.getElementById('opening-container');
-  if (!openings.length) { el.innerHTML='<p style="color:var(--muted);font-size:13px;padding:8px 0">Not enough data yet (need ≥ 3 games per opening).</p>'; return; }
-  let html = `<table class="opening-table"><thead><tr><th>Opening</th><th>Games</th><th style="width:150px">Win Rate</th><th>W / D / L</th><th>Status</th></tr></thead><tbody>`;
-  openings.forEach(o => {
-    const wr = (o.winRate*100).toFixed(0);
-    const col = o.winRate>=0.5?'#5cb85c':'#d9534f';
-    const badge = o.winRate>=0.55?'<span class="badge bg">Strong ✓</span>':o.winRate<0.38?'<span class="badge br">Weak ✗</span>':'<span class="badge by">Mixed ~</span>';
-    html+=`<tr>
-      <td style="font-weight:500">${o.name}</td><td>${o.total}</td>
-      <td><span style="font-size:13px;font-weight:600;color:${col}">${wr}%</span><div class="wr-wrap"><div class="wr-fill" style="width:${wr}%;background:${col}"></div></div></td>
-      <td style="font-size:12px"><span style="color:var(--green)">${o.wins}W</span> / <span style="color:var(--draw)">${o.draws}D</span> / <span style="color:var(--red)">${o.losses}L</span></td>
-      <td>${badge}</td></tr>`;
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ─────────────────────────────────────────────
+// BROWSER ENGINE ANALYSIS
+// Uses chess.js (PGN → FENs) + Stockfish.js (FEN → eval) running fully in-browser.
+// No subscription or server needed. Chess.js and Stockfish are lazy-loaded on first use.
+// ─────────────────────────────────────────────
+
+async function ensureChessJs() {
+  if (CHESS_JS_READY) return;
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js';
+    s.onload  = () => { CHESS_JS_READY = true; resolve(); };
+    s.onerror = () => reject(new Error('Failed to load chess.js from CDN'));
+    document.head.appendChild(s);
   });
-  el.innerHTML = html+'</tbody></table>';
+}
+
+async function ensureStockfish() {
+  if (SF_WORKER) return;
+  // Fetch the JS source, wrap in a Blob, and create a Worker from it.
+  // This avoids browser CORS restrictions on cross-origin Worker scripts.
+  const res = await fetch('https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js');
+  if (!res.ok) throw new Error('Failed to fetch Stockfish engine (' + res.status + ')');
+  const src  = await res.text();
+  const blob = new Blob([src], { type: 'application/javascript' });
+  const url  = URL.createObjectURL(blob);
+  const worker = new Worker(url);
+  URL.revokeObjectURL(url);
+
+  // UCI handshake: uci → uciok → isready → readyok
+  await new Promise((resolve) => {
+    const init = (e) => {
+      const msg = typeof e.data === 'string' ? e.data : '';
+      if (msg === 'uciok')   { worker.postMessage('isready'); }
+      if (msg === 'readyok') { worker.removeEventListener('message', init); resolve(); }
+    };
+    worker.addEventListener('message', init);
+    worker.postMessage('uci');
+  });
+
+  SF_WORKER = worker;
+}
+
+// Evaluate a FEN with Stockfish and return the score in pawns from White's perspective.
+// UCI spec: score cp X is from the side-to-move's POV, so we flip when it's Black's turn.
+function sfEval(fen, depth) {
+  return new Promise((resolve) => {
+    let best    = 0;
+    let settled = false;
+    const stm   = fen.split(' ')[1]; // 'w' or 'b'
+
+    const finish = (val) => {
+      if (settled) return;
+      settled = true;
+      SF_WORKER.removeEventListener('message', handler);
+      resolve(stm === 'b' ? -val : val); // flip to White's perspective
+    };
+
+    const handler = (e) => {
+      const line = typeof e.data === 'string' ? e.data : '';
+      const cpM   = line.match(/\bscore cp (-?\d+)/);
+      const mateM = line.match(/\bscore mate (-?\d+)/);
+      if (cpM)   best = parseInt(cpM[1]) / 100;
+      if (mateM) best = parseInt(mateM[1]) > 0 ? MATE_CAP : -MATE_CAP;
+      if (line.startsWith('bestmove')) finish(best);
+    };
+
+    SF_WORKER.addEventListener('message', handler);
+    SF_WORKER.postMessage('position fen ' + fen);
+    SF_WORKER.postMessage('go depth ' + depth);
+    setTimeout(() => finish(best), 7000); // safety timeout
+  });
+}
+
+// Parse PGN via chess.js and return an array of FEN strings: index 0 = start, index N = after ply N.
+function getGameFens(pgn) {
+  try {
+    const chess = new Chess(); // eslint-disable-line no-undef
+    if (!chess.load_pgn(pgn, { sloppy: true })) return [];
+    const moves = chess.history();
+    chess.reset();
+    const fens = [chess.fen()];
+    for (const san of moves) {
+      if (!chess.move(san, { sloppy: true })) break;
+      fens.push(chess.fen());
+    }
+    return fens;
+  } catch (_) { return []; }
+}
+
+// Analyze up to MAX_GAMES games, evaluating all plies through move MAX_FULL_MOVE.
+// Returns the same {buckets, criticalMoves, evalGames} shape used by the Game Review path.
+async function analyzeGamesWithEngine(games, isWhite, onProgress) {
+  const DEPTH         = 8;
+  const MAX_FULL_MOVE = 15;  // evaluate the first 15 full moves (30 plies)
+  const MAX_GAMES     = 10;
+
+  const subset = games.slice(-MAX_GAMES); // most recent games
+  const buckets       = {};
+  const criticalMoves = [];
+  let   evalGames     = 0;
+
+  for (let gi = 0; gi < subset.length; gi++) {
+    onProgress(gi, subset.length);
+    const game = subset[gi];
+    const fens = getGameFens(game.pgn || '');
+    if (fens.length < 6) continue;
+
+    // Evaluate all plies up to MAX_FULL_MOVE * 2
+    const plyCap   = Math.min(fens.length - 1, MAX_FULL_MOVE * 2);
+    const evalArr  = []; // evalArr[i] = White's-POV eval after ply i (evalArr[0] = start pos)
+
+    for (let p = 0; p <= plyCap; p++) {
+      evalArr.push(await sfEval(fens[p], DEPTH));
+    }
+
+    // Compute swings for this player's moves (same logic as computePlayerSwings)
+    const gameSwings = [];
+    for (let p = 1; p <= plyCap; p++) {
+      const whitePly = (p % 2 === 1); // ply 1,3,5… = White's moves (1-indexed)
+      if (isWhite !== whitePly) continue;
+      const swing      = isWhite ? (evalArr[p-1] - evalArr[p]) : (evalArr[p] - evalArr[p-1]);
+      const moveNumber = Math.ceil(p / 2);
+      gameSwings.push({ moveNumber, swing });
+    }
+
+    if (!gameSwings.length) continue;
+    evalGames++;
+
+    const crit = gameSwings.reduce((b, s) => s.swing > b.swing ? s : b);
+    if (crit.swing >= INACCURACY_THR) criticalMoves.push(crit.moveNumber);
+
+    for (const { moveNumber, swing } of gameSwings) {
+      const bkt = getMoveBucket(moveNumber);
+      if (!buckets[bkt]) buckets[bkt] = { sumPos: 0, n: 0, blunders: 0, mistakes: 0, inaccuracies: 0 };
+      const b = buckets[bkt];
+      b.sumPos += Math.max(0, swing);
+      b.n++;
+      if      (swing >= BLUNDER_THR)     b.blunders++;
+      else if (swing >= MISTAKE_THR)     b.mistakes++;
+      else if (swing >= INACCURACY_THR)  b.inaccuracies++;
+    }
+  }
+
+  onProgress(subset.length, subset.length);
+  return { buckets, criticalMoves, evalGames };
+}
+
+// Called by the "Analyze with Engine" button rendered inside each opening family row.
+async function runEngineAnalysis(rowId) {
+  const reg = FAM_REGISTRY[rowId];
+  if (!reg) return;
+  const { color, familyName } = reg;
+  const cacheKey = color + ':' + familyName;
+
+  const bzDiv = document.getElementById('bz-' + rowId);
+  if (!bzDiv) return;
+
+  const setStatus = (msg) => {
+    const el = document.getElementById('bz-status-' + rowId);
+    if (el) el.textContent = msg;
+  };
+
+  // Show loading state immediately
+  bzDiv.innerHTML = `
+    <div class="bz-title">⚡ Eval Bar Swing Analysis <span class="bz-sub">(engine running…)</span></div>
+    <div class="bz-loading">
+      <div class="spinner" style="width:22px;height:22px;border-width:3px;flex-shrink:0"></div>
+      <span id="bz-status-${rowId}">Loading chess.js…</span>
+    </div>`;
+
+  try {
+    await ensureChessJs();
+    setStatus('Loading Stockfish engine (~2 MB, one-time download)…');
+    await ensureStockfish();
+
+    const allGames  = color === 'white' ? GAME_DATA_STORE.whiteGames : GAME_DATA_STORE.blackGames;
+    const famGames  = allGames.filter(g => getEcoFamily(g.eco) === familyName);
+    const gameCount = Math.min(famGames.length, 10);
+
+    if (!famGames.length) {
+      bzDiv.innerHTML = '<div class="bz-title">⚡ Eval Bar Swing Analysis</div><div class="bz-nodata">No games found for this opening.</div>';
+      return;
+    }
+
+    setStatus('Analyzing game 1 of ' + gameCount + ' (up to move 15 each)…');
+
+    const result = await analyzeGamesWithEngine(famGames, color === 'white', (done, total) => {
+      setStatus(done < total
+        ? 'Analyzing game ' + (done + 1) + ' of ' + total + '…'
+        : 'Finalizing…');
+    });
+
+    ENGINE_CACHE[cacheKey] = result;
+
+    // Re-render with live data
+    bzDiv.innerHTML = blunderZoneInner(result.buckets, result.evalGames, result.criticalMoves, rowId, color, familyName);
+
+  } catch (err) {
+    console.error('[ChessImprover Engine]', err);
+    bzDiv.innerHTML = `
+      <div class="bz-title">⚡ Eval Bar Swing Analysis</div>
+      <div class="bz-nodata" style="color:var(--red)">Engine error: ${escapeHtml(err.message)}. Check your connection and try again.</div>
+      <button class="bz-analyze-btn" onclick="runEngineAnalysis('${rowId}')">↺ Retry</button>`;
+  }
+}
+
+// ─────────────────────────────────────────────
+// BLUNDER ZONE SVG CHART
+// Inline SVG — no Canvas/ID conflicts when multiple rows are open at once.
+// Each bar = one move bucket; height ∝ average eval lost in that bucket.
+// Color: green (tiny loss) → yellow (inaccuracy) → orange (mistake) → red (blunder)
+// ─────────────────────────────────────────────
+// blunderZoneInner — returns the HTML *inside* the `<div id="bz-{rowId}">` container.
+// Called both during initial table render AND after engine analysis finishes (to hot-swap content).
+function blunderZoneInner(buckets, evalGames, criticalMoves, rowId, color, familyName) {
+  // SVG layout constants
+  const W = 560, H = 130;
+  const chartTop = 10, chartBot = H - 24;
+  const barMaxH  = chartBot - chartTop;
+  const slotW    = W / MOVE_BUCKETS.length;
+  const barW     = Math.floor(slotW * 0.60);
+  const padL     = Math.floor((slotW - barW) / 2);
+
+  // ── No eval data: show a skeleton chart + "Analyze with Engine" button ──
+  if (evalGames === 0) {
+    let sk = '';
+    MOVE_BUCKETS.forEach((bkt, i) => {
+      const x = i * slotW + padL;
+      sk += `<rect x="${x}" y="${chartBot - 5}" width="${barW}" height="5" fill="#252540" rx="2"/>`;
+      sk += `<text x="${i * slotW + slotW/2}" y="${H-5}" text-anchor="middle" font-size="9" fill="#404060">${bkt}</text>`;
+    });
+    sk += `<line x1="0" y1="${chartBot}" x2="${W}" y2="${chartBot}" stroke="#252540" stroke-width="1.5"/>`;
+    sk += `<text x="${W/2}" y="${chartTop + barMaxH/2 - 8}" text-anchor="middle" font-size="11" fill="#3a3a5a" font-style="italic">No eval data yet for this opening</text>`;
+    sk += `<text x="${W/2}" y="${chartTop + barMaxH/2 + 10}" text-anchor="middle" font-size="10" fill="#303050">Use engine analysis below, or run Game Review on chess.com</text>`;
+
+    return `
+      <div class="bz-title">⚡ Eval Bar Swing Analysis <span class="bz-sub">(avg eval lost per move range — your moves only)</span></div>
+      <div class="bz-chart-wrap">
+        <svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;display:block" xmlns="http://www.w3.org/2000/svg">${sk}</svg>
+      </div>
+      <button class="bz-analyze-btn" onclick="runEngineAnalysis('${rowId}')">
+        ⚙ Analyze with Engine — free, runs in your browser
+      </button>`;
+  }
+
+  // ── Has data: render real bars ──
+  const cacheKey   = color + ':' + familyName;
+  const fromEngine = !!ENGINE_CACHE[cacheKey];
+
+  const data = MOVE_BUCKETS.map(bkt => {
+    const b = buckets[bkt];
+    if (!b || b.n === 0) return { bkt, avgLoss: 0, blunders: 0, mistakes: 0, inaccuracies: 0 };
+    return { bkt, avgLoss: b.sumPos / b.n, blunders: b.blunders, mistakes: b.mistakes, inaccuracies: b.inaccuracies };
+  });
+
+  const maxLoss = Math.max(...data.map(d => d.avgLoss), 0.3);
+  const avgCrit = criticalMoves.length > 0
+    ? Math.round(criticalMoves.reduce((s, m) => s + m, 0) / criticalMoves.length)
+    : null;
+
+  const totBlunders     = Object.values(buckets).reduce((s, b) => s + (b.blunders     || 0), 0);
+  const totMistakes     = Object.values(buckets).reduce((s, b) => s + (b.mistakes     || 0), 0);
+  const totInaccuracies = Object.values(buckets).reduce((s, b) => s + (b.inaccuracies || 0), 0);
+
+  let svg = '';
+  for (const frac of [0.25, 0.5, 0.75, 1.0]) {
+    const y = chartBot - Math.round(frac * barMaxH);
+    svg += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#1e1e38" stroke-width="1" stroke-dasharray="3,3"/>`;
+  }
+  data.forEach((d, i) => {
+    const barH = maxLoss > 0 ? Math.round((d.avgLoss / maxLoss) * barMaxH) : 2;
+    const x    = i * slotW + padL;
+    const y    = chartBot - barH;
+    const col  = d.avgLoss >= BLUNDER_THR    ? '#d9534f'
+               : d.avgLoss >= MISTAKE_THR    ? '#f0a050'
+               : d.avgLoss >= INACCURACY_THR ? '#f0d060'
+               : '#2a2a50';
+    if (d.avgLoss === maxLoss && d.avgLoss >= INACCURACY_THR)
+      svg += `<rect x="${i*slotW}" y="${chartTop}" width="${slotW}" height="${barMaxH}" fill="rgba(240,208,96,0.04)"/>`;
+    svg += `<rect x="${x}" y="${y}" width="${barW}" height="${Math.max(barH,2)}" fill="${col}" rx="2" opacity="0.9"/>`;
+    if (barH > 16 && d.avgLoss >= INACCURACY_THR)
+      svg += `<text x="${x+barW/2}" y="${y-4}" text-anchor="middle" font-size="9" fill="${col}" font-weight="600">${d.avgLoss.toFixed(2)}</text>`;
+    svg += `<text x="${i*slotW+slotW/2}" y="${H-5}" text-anchor="middle" font-size="9" fill="#666688">${d.bkt}</text>`;
+  });
+  svg += `<line x1="0" y1="${chartBot}" x2="${W}" y2="${chartBot}" stroke="#2a2a4a" stroke-width="1.5"/>`;
+  svg += `<text x="2" y="9" font-size="8" fill="#555577">avg pawns lost ↑</text>`;
+
+  const sourceTag  = fromEngine
+    ? `<span class="bz-source-tag">⚙ Engine</span>`
+    : `<span class="bz-source-tag">📋 Game Review</span>`;
+  const critLine   = avgCrit != null
+    ? `<span>⚡ Avg critical move: <b>move ${avgCrit}</b></span><span style="color:var(--muted)">·</span><span style="color:var(--muted)">${evalGames} game${evalGames!==1?'s':''} analyzed</span>`
+    : `<span style="color:var(--muted)">${evalGames} game${evalGames!==1?'s':''} analyzed</span>`;
+  // Allow re-running engine even when Game Review data exists
+  const reRunBtn = `<button class="bz-analyze-btn" style="margin-top:10px;padding:6px 12px;font-size:11px" onclick="runEngineAnalysis('${rowId}')">⚙ ${fromEngine ? 'Re-analyze' : 'Run engine analysis'}</button>`;
+
+  return `
+    <div class="bz-title">⚡ Eval Bar Swing Analysis ${sourceTag} <span class="bz-sub">(avg eval lost per move range — your moves only)</span></div>
+    <div class="bz-chart-wrap">
+      <svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;display:block" xmlns="http://www.w3.org/2000/svg">${svg}</svg>
+    </div>
+    <div class="bz-legend">
+      <span><span class="dot" style="background:#d9534f"></span>Blunder ≥2.0 <span class="bz-pill bz-blunder">${totBlunders}</span></span>
+      <span><span class="dot" style="background:#f0a050"></span>Mistake 1–2 <span class="bz-pill bz-mistake">${totMistakes}</span></span>
+      <span><span class="dot" style="background:#f0d060"></span>Inaccuracy 0.5–1 <span class="bz-pill bz-inaccuracy">${totInaccuracies}</span></span>
+    </div>
+    <div class="bz-stats">${critLine}</div>
+    ${reRunBtn}`;
+}
+
+function renderFamilyTable(containerId, families, color) {
+  const el = document.getElementById(containerId);
+  const significant = families.filter(f => f.total >= 2);
+  if (!significant.length) {
+    el.innerHTML = `<p style="color:var(--muted);font-size:13px;padding:8px 0">No games as ${color} yet (need ≥ 2 games per family).</p>`;
+    return;
+  }
+
+  const colorLabel = color === 'white' ? '🎯 As White' : '🛡 As Black';
+  let html = `<table class="opening-table"><thead><tr>
+    <th style="width:24px"></th>
+    <th>Opening Family</th>
+    <th>Games</th>
+    <th style="width:150px">Win Rate</th>
+    <th>W / D / L</th>
+    <th>Status</th>
+  </tr></thead><tbody>`;
+
+  significant.forEach((f, i) => {
+    const wr = (f.winRate * 100).toFixed(0);
+    const col = f.winRate >= 0.5 ? '#5cb85c' : '#d9534f';
+    const badge = f.winRate >= 0.55 ? '<span class="badge bg">Strong ✓</span>'
+                : f.winRate < 0.38 ? '<span class="badge br">Weak ✗</span>'
+                : '<span class="badge by">Mixed ~</span>';
+    const rowId = `${color}-fam-${i}`;
+    const tip = familyInfo(f.name, color);
+    const tipClass = (tip && tip !== FAMILY_INFO.Unknown.asWhite && tip !== FAMILY_INFO.Unknown.asBlack) ? '' : 'empty';
+
+    const linesHtml = f.lines.map(l => {
+      const lwr = (l.winRate * 100).toFixed(0);
+      const lcol = l.winRate >= 0.5 ? '#5cb85c' : '#d9534f';
+      return `<tr>
+        <td>${escapeHtml(l.name)}</td>
+        <td>${l.total}</td>
+        <td><span style="font-size:12px;font-weight:600;color:${lcol}">${lwr}%</span><div class="wr-wrap"><div class="wr-fill" style="width:${lwr}%;background:${lcol}"></div></div></td>
+        <td style="font-size:11.5px"><span style="color:var(--green)">${l.wins}W</span> / <span style="color:var(--draw)">${l.draws}D</span> / <span style="color:var(--red)">${l.losses}L</span></td>
+      </tr>`;
+    }).join('');
+
+    // Register this family so runEngineAnalysis can look it up by rowId
+    FAM_REGISTRY[rowId] = { color, familyName: f.name };
+
+    // Check if we already have engine-analysis results cached for this family
+    const cacheKey  = color + ':' + f.name;
+    const cached    = ENGINE_CACHE[cacheKey];
+    const bzBuckets = cached ? cached.buckets       : (f.buckets       || {});
+    const bzEval    = cached ? cached.evalGames      : (f.evalGames      || 0);
+    const bzCrit    = cached ? cached.criticalMoves  : (f.criticalMoves  || []);
+
+    html += `<tr class="fam-row" onclick="toggleFam('${rowId}')">
+      <td><span class="fam-arrow" id="arrow-${rowId}">▸</span></td>
+      <td class="fam-name">${escapeHtml(f.name)}</td>
+      <td>${f.total}</td>
+      <td><span style="font-size:13px;font-weight:600;color:${col}">${wr}%</span><div class="wr-wrap"><div class="wr-fill" style="width:${wr}%;background:${col}"></div></div></td>
+      <td style="font-size:12px"><span style="color:var(--green)">${f.wins}W</span> / <span style="color:var(--draw)">${f.draws}D</span> / <span style="color:var(--red)">${f.losses}L</span></td>
+      <td>${badge}</td>
+    </tr>
+    <tr id="${rowId}" class="fam-detail" style="display:none">
+      <td colspan="6" class="fam-detail-cell">
+        <div class="fam-expand">
+          <div class="fam-tip ${tipClass}">
+            <strong>${colorLabel}:</strong>${escapeHtml(tip)}
+          </div>
+          <div id="bz-${rowId}" class="blunder-zone">
+            ${blunderZoneInner(bzBuckets, bzEval, bzCrit, rowId, color, f.name)}
+          </div>
+          <table class="fam-lines-table" style="margin-top:14px">
+            <thead><tr><th>Specific Line</th><th>Games</th><th style="width:140px">Win Rate</th><th>W / D / L</th></tr></thead>
+            <tbody>${linesHtml}</tbody>
+          </table>
+        </div>
+      </td>
+    </tr>`;
+  });
+
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
+function toggleFam(rowId) {
+  const row = document.getElementById(rowId);
+  const arrow = document.getElementById('arrow-' + rowId);
+  if (!row || !arrow) return;
+  if (row.style.display === 'none') {
+    row.style.display = 'table-row';
+    arrow.classList.add('open');
+  } else {
+    row.style.display = 'none';
+    arrow.classList.remove('open');
+  }
 }
 
 function renderAccuracy(last30) {
@@ -709,7 +1554,25 @@ function renderPhase(phase, lossCount) {
 // INSIGHTS ENGINE
 // ─────────────────────────────────────────────
 function buildInsights(stats, username) {
-  const ins=[], {phase,cs,openings,terms,avgWinAcc,avgLossAcc,losses}=stats;
+  const ins=[], {phase,cs,openings,terms,avgWinAcc,avgLossAcc,losses,whiteFamilies,blackFamilies}=stats;
+
+  // Family-level: within your most-played family per color, where do you bleed rating?
+  [['white', whiteFamilies], ['black', blackFamilies]].forEach(([col, fams]) => {
+    const top = fams.filter(f => f.total >= 5)[0];
+    if (!top) return;
+    const weakest = top.lines
+      .filter(l => l.total >= 2 && l.winRate < 0.45)
+      .sort((a, b) => a.winRate - b.winRate)[0];
+    if (!weakest) return;
+    const colLabel = col === 'white' ? 'as White' : 'as Black';
+    ins.push({
+      icon: '🔍',
+      pri: 'm',
+      title: `Inside ${top.name} ${colLabel}: focus on ${weakest.name}`,
+      text: `Across ${top.total} games in the ${top.name} ${colLabel}, your weakest line is "${weakest.name}" at ${(weakest.winRate*100).toFixed(0)}% over ${weakest.total} games. This is where the family is bleeding rating — drill this specific variation first.`,
+    });
+  });
+
   const pTot=phase.opening+phase.earlyMid+phase.midgame+phase.endgame;
   if(pTot>0){
     const worst=Object.entries(phase).sort((a,b)=>b[1]-a[1])[0];
@@ -801,7 +1664,16 @@ async function runAnalysis(username) {
 
     setProgress(96);
     const games = processGames(rawGames, username);
-    const stats  = computeStats(games);
+
+    // Store game arrays for on-demand engine analysis
+    GAME_DATA_STORE = {
+      whiteGames: games.filter(g => g.isWhite),
+      blackGames: games.filter(g => !g.isWhite),
+    };
+    // Clear engine cache when analyzing a new user (but keep the Worker alive for re-use)
+    Object.keys(ENGINE_CACHE).forEach(k => delete ENGINE_CACHE[k]);
+
+    const stats = computeStats(games);
 
     showOnly('dashboard');
     document.title = `Chess Improver — ${username}`;
@@ -809,7 +1681,8 @@ async function runAnalysis(username) {
     renderStatCards(stats);
     renderRating(stats.ratingHistory);
     renderResults(stats.wins, stats.draws, stats.losses);
-    renderOpenings(stats.openings);
+    renderFamilyTable('white-openings-container', stats.whiteFamilies, 'white');
+    renderFamilyTable('black-openings-container', stats.blackFamilies, 'black');
     renderAccuracy(stats.last30acc);
     renderColor(stats.cs);
     renderPhase(stats.phase, stats.losses);
